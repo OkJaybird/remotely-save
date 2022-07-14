@@ -160,6 +160,8 @@ export const DEFAULT_S3_CONFIG = {
   s3AccessKeyID: "",
   s3SecretAccessKey: "",
   s3BucketName: "",
+  s3ServerSideEncryption: "",
+  s3SSEKMSKeyId: "",
   bypassCorsLocally: true,
   partsConcurrency: 20,
   forcePathStyle: false,
@@ -275,12 +277,12 @@ export const uploadToRemote = async (
     // folder
     const contentType = DEFAULT_CONTENT_TYPE;
     await s3Client.send(
-      new PutObjectCommand({
+      new PutObjectCommand(Object.assign({
         Bucket: s3Config.s3BucketName,
         Key: uploadFile,
         Body: "",
         ContentType: contentType,
-      })
+      }, (!!s3Config.s3ServerSideEncryption)?{ServerSideEncryption:s3Config.s3ServerSideEncryption}:{}, (!!s3Config.s3SSEKMSKeyId)?{SSEKMSKeyId:s3Config.s3SSEKMSKeyId}:{}))
     );
     return await getRemoteMeta(s3Client, s3Config, uploadFile);
   } else {
@@ -315,12 +317,12 @@ export const uploadToRemote = async (
       queueSize: s3Config.partsConcurrency, // concurrency
       partSize: bytesIn5MB, // minimal 5MB by default
       leavePartsOnError: false,
-      params: {
+      params: Object.assign({
         Bucket: s3Config.s3BucketName,
         Key: uploadFile,
         Body: body,
         ContentType: contentType,
-      },
+      }, (!!s3Config.s3ServerSideEncryption)?{ServerSideEncryption:s3Config.s3ServerSideEncryption}:{}, (!!s3Config.s3SSEKMSKeyId)?{SSEKMSKeyId:s3Config.s3SSEKMSKeyId}:{}),
     });
     upload.on("httpUploadProgress", (progress) => {
       // log.info(progress);
@@ -406,10 +408,10 @@ const downloadFromRemoteRaw = async (
   fileOrFolderPath: string
 ) => {
   const data = await s3Client.send(
-    new GetObjectCommand({
+    new GetObjectCommand(Object.assign({
       Bucket: s3Config.s3BucketName,
       Key: fileOrFolderPath,
-    })
+    }, (!!s3Config.s3ServerSideEncryption)?{ServerSideEncryption:s3Config.s3ServerSideEncryption}:{}, (!!s3Config.s3SSEKMSKeyId)?{SSEKMSKeyId:s3Config.s3SSEKMSKeyId}:{}))
   );
   const bodyContents = await getObjectBodyToArrayBuffer(data.Body);
   return bodyContents;
@@ -483,20 +485,20 @@ export const deleteFromRemote = async (
     remoteFileName = remoteEncryptedKey;
   }
   await s3Client.send(
-    new DeleteObjectCommand({
+    new DeleteObjectCommand(Object.assign({
       Bucket: s3Config.s3BucketName,
       Key: remoteFileName,
-    })
+    }, (!!s3Config.s3ServerSideEncryption)?{ServerSideEncryption:s3Config.s3ServerSideEncryption}:{}, (!!s3Config.s3SSEKMSKeyId)?{SSEKMSKeyId:s3Config.s3SSEKMSKeyId}:{}))
   );
 
   if (fileOrFolderPath.endsWith("/") && password === "") {
     const x = await listFromRemote(s3Client, s3Config, fileOrFolderPath);
     x.Contents.forEach(async (element) => {
       await s3Client.send(
-        new DeleteObjectCommand({
+        new DeleteObjectCommand(Object.assign({
           Bucket: s3Config.s3BucketName,
           Key: element.key,
-        })
+        }, (!!s3Config.s3ServerSideEncryption)?{ServerSideEncryption:s3Config.s3ServerSideEncryption}:{}, (!!s3Config.s3SSEKMSKeyId)?{SSEKMSKeyId:s3Config.s3SSEKMSKeyId}:{}))
       );
     });
   } else if (fileOrFolderPath.endsWith("/") && password !== "") {

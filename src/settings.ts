@@ -799,6 +799,32 @@ export class RemotelySaveSettingTab extends PluginSettingTab {
       );
 
     new Setting(s3Div)
+      .setName(t("settings_s3_sse"))
+      .setDesc(t("settings_s3_sse"))
+      .addText((text) =>
+        text
+          .setPlaceholder("")
+          .setValue(`${this.plugin.settings.s3.s3ServerSideEncryption}`)
+          .onChange(async (value) => {
+            this.plugin.settings.s3.s3ServerSideEncryption = value.trim();
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(s3Div)
+      .setName(t("settings_s3_ssekmskeyid"))
+      .setDesc(t("settings_s3_ssekmskeyid"))
+      .addText((text) =>
+        text
+          .setPlaceholder("")
+          .setValue(`${this.plugin.settings.s3.s3SSEKMSKeyId}`)
+          .onChange(async (value) => {
+            this.plugin.settings.s3.s3SSEKMSKeyId = value.trim();
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(s3Div)
       .setName(t("settings_s3_urlstyle"))
       .setDesc(t("settings_s3_urlstyle_desc"))
       .addDropdown((dropdown) => {
