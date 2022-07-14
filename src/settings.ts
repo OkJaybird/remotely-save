@@ -800,7 +800,7 @@ export class RemotelySaveSettingTab extends PluginSettingTab {
 
     new Setting(s3Div)
       .setName(t("settings_s3_sse"))
-      .setDesc(t("settings_s3_sse"))
+      .setDesc(t("settings_s3_sse_desc"))
       .addText((text) =>
         text
           .setPlaceholder("")
@@ -813,7 +813,7 @@ export class RemotelySaveSettingTab extends PluginSettingTab {
 
     new Setting(s3Div)
       .setName(t("settings_s3_ssekmskeyid"))
-      .setDesc(t("settings_s3_ssekmskeyid"))
+      .setDesc(t("settings_s3_ssekmskeyid_desc"))
       .addText((text) =>
         text
           .setPlaceholder("")
