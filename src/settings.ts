@@ -799,8 +799,8 @@ export class RemotelySaveSettingTab extends PluginSettingTab {
       );
 
     new Setting(s3Div)
-      .setName(t("settings_s3_sse"))
-      .setDesc(t("settings_s3_sse_desc"))
+      .setName("Server Side Encryption")
+      .setDesc("SSE algorithm used when storing objects in the S3 bucket (i.e. AES256 or aws:kms). Leave blank to disable.")
       .addText((text) =>
         text
           .setPlaceholder("")
@@ -812,8 +812,8 @@ export class RemotelySaveSettingTab extends PluginSettingTab {
       );
 
     new Setting(s3Div)
-      .setName(t("settings_s3_ssekmskeyid"))
-      .setDesc(t("settings_s3_ssekmskeyid_desc"))
+      .setName("SSE KMS Key ID")
+      .setDesc("The KMS Key ID to use when aws:kms is specified for SSE configuration (i.e. aws/s3). Leave blank to disable / use the SDK default.")
       .addText((text) =>
         text
           .setPlaceholder("")
